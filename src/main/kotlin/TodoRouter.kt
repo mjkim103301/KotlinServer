@@ -34,7 +34,7 @@ fun Routing.todo(service: TodoService) {
         }
         put("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
-                ?: throw BadRequestException("Parameter id is null")
+            ?: throw BadRequestException("Parameter id is null")
             val body = call.receive<TodoRequest>()
             service.renew(id, body)
             call.response.status(HttpStatusCode.NoContent)

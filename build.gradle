@@ -56,4 +56,14 @@ dependencies {
     compile "ch.qos.logback:logback-classic:1.2.3"
 
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
+
+    //hibernate
+    compile "org.hibernate:hibernate-core:5.4.18.Final"
+
+    // Hibernate
+    implementation          "org.hibernate:hibernate-core"
+    runtimeOnly             "org.hibernate:hibernate-hikaricp"
+
+    // JDBC Driver
+    runtimeOnly             'com.h2database:h2'
 }

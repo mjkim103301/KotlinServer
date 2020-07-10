@@ -1,5 +1,6 @@
 package main.kotlin
 
+import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
@@ -27,7 +28,7 @@ fun Application.main(testing: Boolean = false) {
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)
             registerModule(JavaTimeModule().apply {
-                addSerializer(LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
+                addSerializer(LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)) as JsonSerializer<*>?)
                 addDeserializer(LocalDateTime::class.java, LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
             })
         }
@@ -35,7 +36,7 @@ fun Application.main(testing: Boolean = false) {
     install(Routing) {
         todo(TodoService())
     }
-    DatabaseInitializer.init()
+   // DatabaseInitializer.init()
 }
 
 

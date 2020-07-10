@@ -2,20 +2,27 @@ package main.kotlin.config
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import com.zaxxer.hikari.pool.HikariProxyCallableStatement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import main.kotlin.data.TodoData
 import main.kotlin.entity.Todos
+import main.kotlin.service.HibernateUtil5
+import org.hibernate.SessionFactory
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseInitializer {
-
+    val session: SessionFactory = HibernateUtil5.buildSessionFactory();
     fun init() {
-        Database.connect(HikariDataSource(hikariConfig()))
+        /*Database.connect(HikariDataSource(hikariConfig()))
         transaction {
             create(Todos)
-        }
+        }*/
+        HikariDataSource(hikariConfig())
+
+      //  TodoData
     }
 }
 
@@ -31,8 +38,11 @@ private fun hikariConfig() =
         validate()
     }
 
+
+
+/*
 suspend fun <T> query(block: () -> T): T = withContext(Dispatchers.IO) {
     transaction {
         block()
     }
-}
+}*/

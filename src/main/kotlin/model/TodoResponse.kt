@@ -1,6 +1,6 @@
 package main.kotlin.model
 
-import main.kotlin.entity.Todo
+import main.kotlin.data.TodoData
 import java.time.LocalDateTime
 
 data class TodoResponse(val id: Int,
@@ -10,9 +10,10 @@ data class TodoResponse(val id: Int,
                         val updatedAt: LocalDateTime) {
 
     companion object {
-        fun of(todo: Todo) =
+
+        fun of(todo: TodoData) =
             TodoResponse(
-                id = todo.id.value,
+                id = todo.id,
                 content = todo.content,
                 done = todo.done,
                 createdAt = todo.createdAt,
