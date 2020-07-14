@@ -1,23 +1,21 @@
-package main.kotlin.service
-
-import io.ktor.util.KtorExperimentalAPI
+package main.kotlin.service;
 
 import main.kotlin.data.TodoData
 
 import main.kotlin.model.TodoRequest
 import main.kotlin.model.TodoResponse
+import main.kotlin.proto.TodoResources
 import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.Transaction
 import java.time.LocalDateTime
 
-@KtorExperimentalAPI
-class TodoService {
+class TodoServiceForProto {
     var todoData=TodoData()
-    var list:ArrayList<TodoData> = ArrayList()
+   // var list:ArrayList<TodoData> = ArrayList()
     var sessionFactory: SessionFactory =HibernateUtil5.getSessionFactory()
 
-    fun getAll() :List<TodoResponse>{
+    fun getAll() : List<TodoData> {
 
         var session: Session =sessionFactory.getCurrentSession()
         var tx: Transaction?=null
@@ -25,8 +23,8 @@ class TodoService {
             tx=session.beginTransaction()
 
             val q = session.createQuery("from TodoData")
-            val reviews = (q.list() as? List<TodoData> ?: throw Exception())?.map(TodoResponse.Companion::of)
-            println(reviews)
+            val reviews = (q.list() as? List<TodoData> ?: throw Exception())//?.map(TodoResponse.Companion::of)
+            //println(reviews)
 
 
 
@@ -43,21 +41,21 @@ class TodoService {
         }
     }
 
-    fun getById(id: Int) : List<TodoResponse> {
+    fun getById(id: Int) : TodoData {
         //Todo.findById(id)?.run(TodoResponse.Companion::of) ?: throw NotFoundException()
         var session: Session = sessionFactory.getCurrentSession()
 
         var tx: Transaction? = null
-       try {
-                tx = session.beginTransaction()
+        try {
+            tx = session.beginTransaction()
 
-           val q = session.createQuery("from TodoData where id=${id}")
-           val reviews = (q.list() as? List<TodoData> ?: throw Exception())?.map(TodoResponse.Companion::of)
-           println(reviews)
+            val q = session.createQuery("from TodoData where id=${id}")
+            val reviews = (q.list() as? List<TodoData> ?: throw Exception())//?.map(TodoResponse.Companion::of)
+            println(reviews)
 
 
             tx?.commit()
-           return reviews
+            return reviews[0]
         } catch (e: Exception) {
             if (tx != null) {
                 tx!!.rollback()
@@ -67,9 +65,9 @@ class TodoService {
             throw Exception("Transaction getById faild", e)
 
         }
-        }
+    }
 
-    fun new(content: String) {
+    fun new(content: TodoResources.Todo2) {
 
 
 
@@ -80,7 +78,7 @@ class TodoService {
 
             todoData = TodoData().apply {
 
-                this.content = content
+                this.content = content.toString()
                 createdAt=LocalDateTime.now()
                 updatedAt=LocalDateTime.now()
 
@@ -100,7 +98,7 @@ class TodoService {
 
     }
 
-    fun renew(id: Int, req: TodoRequest) {
+    fun renew(id: Int, req: TodoResources.Todo2) {
 
         var session: Session = sessionFactory.getCurrentSession()
         var tx: Transaction? = null
@@ -109,7 +107,7 @@ class TodoService {
         try {
             tx = session.beginTransaction()
 
-           todoData=(session.get(TodoData::class.java, id) as TodoData)
+            todoData=(session.get(TodoData::class.java, id) as TodoData)
             todoData.apply {
                 content=req.content
                 done=req.done?:false
@@ -152,5 +150,4 @@ class TodoService {
 
         }
     }
-
 }

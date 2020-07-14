@@ -10,10 +10,12 @@ import io.ktor.application.install
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
+import io.ktor.http.ContentType
 import io.ktor.jackson.jackson
 import io.ktor.routing.Routing
 import main.kotlin.config.DatabaseInitializer
-import main.kotlin.service.TodoService
+//import main.kotlin.service.TodoService
+import main.kotlin.service.TodoServiceForProto
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -25,18 +27,25 @@ fun Application.main(testing: Boolean = false) {
     install(DefaultHeaders)
     install(CallLogging)
     install(ContentNegotiation) {
+
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)
             registerModule(JavaTimeModule().apply {
                 addSerializer(LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)) as JsonSerializer<*>?)
                 addDeserializer(LocalDateTime::class.java, LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
             })
+            register(ContentType("application", "x-protobuf"), ProtobufConverter())
         }
+
     }
     install(Routing) {
-        todo(TodoService())
+       // todo(TodoService())
+        todoProto(TodoServiceForProto())
     }
    // DatabaseInitializer.init()
 }
+
+
+
 
 

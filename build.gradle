@@ -4,27 +4,37 @@ version '1.0-SNAPSHOT'
 buildscript {
     ext.kotlin_version = '1.3.61'
     ext.ktor_version = '1.3.1'
-    ext.exposed_version = '0.21.+'
+    //ext.exposed_version = '0.21.+'
     ext.h2_version = '1.4.200'
     ext.jackson_version = '2.10.2'
 
+    ext.protobuf_gradle_version = '0.8.12'
+    ext.protoc_version = '3.12.2'
     repositories {
         mavenCentral()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.12'
+
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'application'
+apply plugin: 'com.google.protobuf'
 
 sourceSets {
-    main.kotlin.srcDirs = main.java.srcDirs = ['src']
+    main.proto{
+        srcDir 'src/main/kotlin/proto'
+    }
+    main.kotlin.srcDirs = main.java.srcDirs = ['src', "${buildDir.absolutePath}/generated/source/proto/main/java"]
     test.kotlin.srcDirs = test.java.srcDirs = ['test']
     main.resources.srcDirs = ['resources']
     test.resources.srcDirs = ['testresources']
+
+
 }
 
 sourceCompatibility = 1.8
@@ -42,10 +52,10 @@ dependencies {
     compile "io.ktor:ktor-jackson:$ktor_version"
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile "org.jetbrains.exposed:exposed-core:$exposed_version"
-    compile "org.jetbrains.exposed:exposed-jdbc:$exposed_version"
-    compile "org.jetbrains.exposed:exposed-dao:$exposed_version"
-    compile "org.jetbrains.exposed:exposed-java-time:$exposed_version"
+    //compile "org.jetbrains.exposed:exposed-core:$exposed_version"
+    //compile "org.jetbrains.exposed:exposed-jdbc:$exposed_version"
+    //compile "org.jetbrains.exposed:exposed-dao:$exposed_version"
+    //compile "org.jetbrains.exposed:exposed-java-time:$exposed_version"
 
     compile "com.h2database:h2:$h2_version"
     compile "com.zaxxer:HikariCP:3.4.2"
@@ -62,8 +72,24 @@ dependencies {
 
     // Hibernate
     implementation          "org.hibernate:hibernate-core"
-    runtimeOnly             "org.hibernate:hibernate-hikaricp"
+//    runtimeOnly             "org.hibernate:hibernate-hikaricp"
 
     // JDBC Driver
     runtimeOnly             'com.h2database:h2'
+
+    //protobuf
+    compile "com.google.protobuf:protobuf-java:$protoc_version"
+}
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protoc_version"
+    }
+    plugins {
+    }
+    generateProtoTasks {
+        generatedFilesBaseDir = "$projectDir/src/generated"
+        all().each { task ->
+        }
+        ofSourceSet('main')
+    }
 }
